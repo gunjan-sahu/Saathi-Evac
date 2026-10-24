@@ -43,7 +43,8 @@ def add_shelter(data: ShelterIn, _=Depends(require_roles("coordinator")), db: Se
 
 @router.get("/shelters")
 def shelters(_=Depends(require_roles(*ALL)), db: Session = Depends(get_db)):
-    return [{"id": s.id, "name": s.name, "capacity": s.capacity, "occupancy": s.occupancy}
+    return [{"id": s.id, "name": s.name, "capacity": s.capacity, "occupancy": s.occupancy,
+             "lat": s.lat, "lon": s.lon, "accessible": s.accessible}
             for s in db.query(Shelter).all()]
 
 

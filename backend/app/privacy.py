@@ -1,6 +1,7 @@
 """Privacy rules: health details are visible only during an active event, and only to
 rescue teams, coordinators, and helpers assigned to that person. Every view is logged."""
-from .models import Event, Assignment, Helper, Shelter, AccessLog
+from datetime import timedelta
+from .models import Event, Assignment, Helper, Shelter, AccessLog, now
 from .agents.triage import score_person
 
 
@@ -29,7 +30,13 @@ def can_see_health(db, user, p):
 
 
 def log_access(db, user, action, person_id=None):
-    db.add(AccessLog(user_id=user.id, action=action, person_id=person_id))
+    """The dashboard refreshes often, so log at most once a minute per user and person."""
+    cutoff = now() - timedelta(minutes=1)
+    recent = db.query(AccessLog).filter(
+        AccessLog.user_id == user.id, AccessLog.action == action,
+        AccessLog.person_id == person_id, AccessLog.created_at > cutoff).first()
+    if not recent:
+        db.add(AccessLog(user_id=user.id, action=action, person_id=person_id))
 
 
 def person_view(db, user, p):
@@ -42,8 +49,9 @@ def person_view(db, user, p):
             "safe_confirmed": p.safe_confirmed, "needs_help": p.needs_help}
     if can_see_health(db, user, p):
         score, reasons = score_person(p)
-        view.update(priority_score=score, reasons=reasons, health_visible=True)
+        view.update(priority_score=score, reasons=reasons, health_visible=True,
+                    lat=p.lat, lon=p.lon)  # location only while an event is active
         log_access(db, user, "view_health", p.id)
     else:
-        view["health_visible"] = False  # score and reasons are hidden
+        view["health_visible"] = False  # score, reasons and location are hidden
     return view

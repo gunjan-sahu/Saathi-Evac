@@ -27,12 +27,12 @@ for name, pw, role, hid in users:
 db.commit()
 coord = db.query(User).filter(User.username == "coord").first()
 demo = [
-    dict(name="Demo Person 1", age=82, phone="9100000001", language="hi", bedridden=True, oxygen_dependent=True, lives_alone=True, gender="female"),
-    dict(name="Demo Person 2", age=68, phone="9100000002", mobility_aid=True, gender="male"),
-    dict(name="Demo Person 3", age=77, phone="9100000003", language="hi", hearing_limit=True, lives_alone=True, gender="female", prefers_women_team=True),
+    dict(name="Demo Person 1", age=82, phone="9100000001", language="hi", lat=26.4490, lon=80.3310, bedridden=True, oxygen_dependent=True, lives_alone=True, gender="female"),
+    dict(name="Demo Person 2", age=68, phone="9100000002", lat=26.4520, lon=80.3350, mobility_aid=True, gender="male"),
+    dict(name="Demo Person 3", age=77, phone="9100000003", language="hi", lat=26.4560, lon=80.3290, hearing_limit=True, lives_alone=True, gender="female", prefers_women_team=True),
 ]
 for d in demo:
-    create_person(db, PersonIn(ward="ward-7", lat=26.449, lon=80.331, consent=True, **d), coord.id)
+    create_person(db, PersonIn(ward="ward-7", consent=True, **d), coord.id)
 db.commit()
 print("Seeded. Logins (demo only): coord/Coord@12345, rescue/Rescue@12345, volunteer1/Volunteer@12345")
 print("Start the server: uvicorn app.main:app --reload")

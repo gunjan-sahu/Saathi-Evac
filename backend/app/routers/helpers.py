@@ -27,9 +27,9 @@ def add_helper(data: HelperIn, user=Depends(require_roles("volunteer", "coordina
 
 @router.get("")
 def list_helpers(_=Depends(require_roles("coordinator", "rescue")), db: Session = Depends(get_db)):
-    return [{"id": h.id, "name": h.name, "status": h.status, "skills": h.skills,
-             "capacity": h.capacity} for h in db.query(Helper).all()]
-
+        return [{"id": h.id, "name": h.name, "status": h.status, "skills": h.skills,
+             "capacity": h.capacity, "lat": h.lat, "lon": h.lon, "women_led": h.women_led}
+            for h in db.query(Helper).all()]
 
 @router.post("/assignments/{assignment_id}/status")
 def update_status(assignment_id: int, status: str, user=Depends(get_current_user),
