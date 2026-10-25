@@ -13,6 +13,7 @@ class PersonIn(BaseModel):
     consent: bool
     gender: Optional[str] = None  # audit only
     prefers_women_team: bool = False
+    client_id: Optional[str] = None  # set by the phone so retries never duplicate
     bedridden: bool = False
     mobility_aid: bool = False
     oxygen_dependent: bool = False

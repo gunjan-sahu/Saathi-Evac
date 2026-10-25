@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..models import Helper, Assignment, now
+from ..models import Helper, Assignment, Person, now
+from ..privacy import person_view
 from ..schemas import HelperIn
 from ..security import require_roles, get_current_user
 from ..agents.matching import reassign_for_helper, add_backup, silent_helpers
@@ -27,9 +28,25 @@ def add_helper(data: HelperIn, user=Depends(require_roles("volunteer", "coordina
 
 @router.get("")
 def list_helpers(_=Depends(require_roles("coordinator", "rescue")), db: Session = Depends(get_db)):
-        return [{"id": h.id, "name": h.name, "status": h.status, "skills": h.skills,
+    return [{"id": h.id, "name": h.name, "status": h.status, "skills": h.skills,
              "capacity": h.capacity, "lat": h.lat, "lon": h.lon, "women_led": h.women_led}
             for h in db.query(Helper).all()]
+
+
+@router.get("/me/assignments")
+def my_assignments(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """The logged-in helper's current people. Health details follow the usual privacy rules."""
+    if not user.helper_id:
+        return []
+    rows = []
+    for a in db.query(Assignment).filter(Assignment.helper_id == user.helper_id,
+                                         Assignment.status != "replaced").order_by(Assignment.id):
+        p = db.get(Person, a.person_id)
+        if p and p.consent:
+            rows.append({"assignment_id": a.id, "status": a.status, "person": person_view(db, user, p)})
+    db.commit()
+    return rows
+
 
 @router.post("/assignments/{assignment_id}/status")
 def update_status(assignment_id: int, status: str, user=Depends(get_current_user),

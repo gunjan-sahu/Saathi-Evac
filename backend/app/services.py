@@ -7,6 +7,10 @@ CONSENT_SCOPE = ("Collect needs, location and contact to warn and evacuate this 
 
 
 def create_person(db, data, user_id, method="in_person"):
+    if data.client_id:
+        existing = db.query(Person).filter(Person.client_id == data.client_id).first()
+        if existing:
+            return existing
     p = Person(**data.model_dump(), registered_by=user_id)
     db.add(p)
     db.flush()

@@ -36,6 +36,7 @@ class Person(Base):
     gender = Column(String, nullable=True)  # AUDIT ONLY. Never used in scoring.
     prefers_women_team = Column(Boolean, default=False)  # person's own request
     registered_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    client_id = Column(String, unique=True, nullable=True, index=True)  # makes offline retries safe
     # needs
     bedridden = Column(Boolean, default=False)
     mobility_aid = Column(Boolean, default=False)
