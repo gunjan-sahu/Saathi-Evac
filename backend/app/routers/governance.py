@@ -6,6 +6,7 @@ from ..schemas import EventIn, ConcernIn
 from ..security import require_roles
 from ..services import start_event
 from ..agents.triage import published_rules
+from .. import messages
 
 router = APIRouter(tags=["governance"])
 
@@ -14,6 +15,12 @@ router = APIRouter(tags=["governance"])
 def rules():
     """Public on purpose: officials and NGOs can audit how people are ranked."""
     return published_rules()
+
+
+@router.get("/languages")
+def languages():
+    """Warning languages available, with their review status."""
+    return messages.languages()
 
 
 @router.post("/events")

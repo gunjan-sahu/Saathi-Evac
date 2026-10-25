@@ -1,11 +1,7 @@
 """Warning agent: voice first, SMS fallback. Providers are SIMULATED for now.
 Replace send_voice / send_sms with Twilio or an Indian provider later."""
 from ..models import Person, Assignment, Helper, WarningLog
-
-MESSAGES = {
-    "en": "Alert for ward {ward}. Help is being arranged. Press 1 if you are safe, press 2 if you need help.",
-    "hi": "वार्ड {ward} के लिए चेतावनी। मदद की व्यवस्था की जा रही है। सुरक्षित हैं तो 1 दबाएँ, मदद चाहिए तो 2 दबाएँ।",
-}
+from ..messages import warning_text
 
 
 def send_voice(phone, text):
@@ -22,7 +18,7 @@ def run_warning(db, ward, override=None):
     sent = 0
     people = db.query(Person).filter(Person.ward == ward, Person.consent == True).all()  # noqa: E712
     for p in people:
-        text = override or MESSAGES.get(p.language, MESSAGES["en"]).format(ward=ward)
+        text = override or warning_text(p.language, ward)
         channel = "voice" if send_voice(p.phone, text) else ("sms" if send_sms(p.phone, text) else "failed")
         db.add(WarningLog(target_type="person", target_id=p.id, channel=channel, message=text))
         helper_ids = {a.helper_id for a in db.query(Assignment).filter(Assignment.person_id == p.id)}
