@@ -1,0 +1,94 @@
+/* Saathi-Evac motion layer. Uses the individual `translate` / `scale` properties so it never
+   fights the `transform` values already used by the v0 design. */
+:root { --ease-out: cubic-bezier(.22, 1, .36, 1); --ease-spring: cubic-bezier(.3, 1.4, .5, 1); }
+html { scroll-behavior: smooth; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+@keyframes fade-left { from { opacity: 0; translate: -14px 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes pop { from { opacity: 0; scale: .8; } to { opacity: 1; scale: 1; } }
+@keyframes toast-in { from { opacity: 0; translate: 0 22px; scale: .96; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes grow-x { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes pin-drop { from { opacity: 0; translate: 0 -20px; scale: .6; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(34 139 94 / .45); } 70% { box-shadow: 0 0 0 9px rgb(34 139 94 / 0); } 100% { box-shadow: 0 0 0 0 rgb(34 139 94 / 0); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* Page enter: each screen fades in and its blocks rise one after another */
+.screen-stack { animation: fade-in .35s var(--ease-out) both; }
+.screen-stack > * { animation: fade-up .55s var(--ease-out) both; }
+.screen-stack > *:nth-child(1) { animation-delay: .03s; }
+.screen-stack > *:nth-child(2) { animation-delay: .09s; }
+.screen-stack > *:nth-child(3) { animation-delay: .15s; }
+.screen-stack > *:nth-child(4) { animation-delay: .21s; }
+.screen-stack > *:nth-child(5) { animation-delay: .27s; }
+.screen-stack > *:nth-child(6) { animation-delay: .33s; }
+.screen-stack > *:nth-child(n+7) { animation-delay: .39s; }
+
+/* Lists and tables */
+.queue-list > *, .assignment-list > *, .people-list > *, .detail-list > * { animation: fade-up .5s var(--ease-out) both; }
+.queue-list > *:nth-child(2), .assignment-list > *:nth-child(2), .people-list > *:nth-child(2) { animation-delay: .05s; }
+.queue-list > *:nth-child(3), .assignment-list > *:nth-child(3), .people-list > *:nth-child(3) { animation-delay: .10s; }
+.queue-list > *:nth-child(4), .assignment-list > *:nth-child(4), .people-list > *:nth-child(4) { animation-delay: .15s; }
+.queue-list > *:nth-child(5), .assignment-list > *:nth-child(5), .people-list > *:nth-child(5) { animation-delay: .20s; }
+.queue-list > *:nth-child(n+6), .assignment-list > *:nth-child(n+6), .people-list > *:nth-child(n+6) { animation-delay: .25s; }
+.data-table tbody tr { animation: fade-left .45s var(--ease-out) both; transition: background-color .2s ease; }
+.data-table tbody tr:nth-child(2) { animation-delay: .04s; } .data-table tbody tr:nth-child(3) { animation-delay: .08s; }
+.data-table tbody tr:nth-child(4) { animation-delay: .12s; } .data-table tbody tr:nth-child(5) { animation-delay: .16s; }
+.data-table tbody tr:nth-child(n+6) { animation-delay: .2s; }
+.data-table tbody tr:hover { background-color: rgb(24 61 53 / .05); }
+.row-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* Cards: gentle lift on hover */
+.app-content [class$="-card"], .app-content [class*="-card "] {
+  transition: translate .28s var(--ease-out), box-shadow .28s ease, border-color .2s ease, background-color .2s ease;
+}
+.app-content [class$="-card"]:hover, .app-content [class*="-card "]:hover {
+  translate: 0 -3px; box-shadow: 0 14px 30px -18px rgb(24 61 53 / .45);
+}
+
+/* Buttons and links */
+button, [role="button"], a { transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, scale .15s var(--ease-out), translate .2s var(--ease-out), opacity .2s ease; }
+button:not(:disabled):active, [role="button"]:active { scale: .97; }
+.primary-button:not(:disabled):hover, .auth-submit:not(:disabled):hover { translate: 0 -1px; box-shadow: 0 10px 22px -10px rgb(24 61 53 / .6); }
+.icon-button:hover, .password-visibility:hover { scale: 1.08; }
+.text-button.setup-link { margin-top: .6rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Navigation */
+.nav-item { transition: background-color .2s ease, color .2s ease, translate .22s var(--ease-out); }
+.nav-item:hover { translate: 3px 0; }
+.nav-item-active .nav-current-mark { animation: pop .4s var(--ease-spring) both; }
+.language-toggle button { transition: background-color .2s ease, color .2s ease, scale .15s ease; }
+
+/* Feedback */
+.app-toast { animation: toast-in .45s var(--ease-spring) both; }
+.inline-notice, .form-error, .error-state, .queue-empty { animation: fade-up .4s var(--ease-out) both; }
+.badge-success, .badge-danger, .badge-warning, .badge-info { animation: pop .4s var(--ease-spring) both; }
+.progress-track > * { transform-origin: left center; animation: grow-x .9s var(--ease-out) both; transition: width .8s var(--ease-out); }
+.network-mark:not(.network-mark-offline) { animation: pulse-ring 2.4s ease-out infinite; }
+.signal-dot { animation: pulse-ring 2s ease-out infinite; }
+
+/* Dialogs and panels (opacity only, so their own positioning is untouched) */
+.detail-backdrop { animation: fade-in .25s ease both; }
+.confirm-dialog, .form-dialog, .dialog-content, .form-dialog-content, .person-detail-panel, .queue-panel { animation: fade-in .3s ease both; }
+
+/* Map */
+.map-pin { animation: pin-drop .6s var(--ease-spring) both; transition: scale .2s var(--ease-out); }
+.map-icon-host:hover .map-pin { scale: 1.18; }
+.map-frame { animation: fade-in .6s ease both; }
+
+/* Login and setup */
+.auth-form-inner { animation: fade-up .65s var(--ease-out) both; }
+.auth-art-content > * { animation: fade-up .7s var(--ease-out) both; }
+.auth-art-content > *:nth-child(2) { animation-delay: .12s; } .auth-art-content > *:nth-child(3) { animation-delay: .22s; }
+.auth-art-content > *:nth-child(4) { animation-delay: .32s; }
+.contour-art path { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: draw 2.8s var(--ease-out) forwards; }
+.contour-art path:nth-child(even) { animation-delay: .25s; }
+.contour-marker { animation: float 4.5s ease-in-out infinite; }
+.contour-marker.marker-two { animation-delay: 1.2s; } .contour-marker.marker-three { animation-delay: 2.4s; }
+.boot-screen > * { animation: fade-up .5s var(--ease-out) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
