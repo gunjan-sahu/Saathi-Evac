@@ -60,7 +60,7 @@ export default function App() {
     <div className="app">
       <header className="top">
         <div>
-          <div className="brand">SAATHI-EVAC</div>
+          <div className="brand"><img src="/logo.png" alt="" className="logo" />SAATHI-EVAC</div>
           <div className="muted small">{showField ? "Field app" : "Rescue dashboard"} · proposed design, prototype stage</div>
         </div>
         {user.role !== "volunteer" && (
