@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { ArrowRight, Eye, EyeOff, Map, ShieldCheck } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { API_BASE_URL, API_URL_CONFIGURED } from "@/lib/api"
 import type { Language } from "@/lib/contracts"
@@ -48,7 +48,7 @@ export function LoginScreen({
         <div className="auth-art-grain" aria-hidden="true" />
         <div className="auth-art-topline">
           <a className="brand-lockup brand-lockup-light" href="/" aria-label={t(language, "appName")}>
-            <span className="brand-symbol"><Map aria-hidden="true" /></span>
+            <span className="brand-symbol brand-symbol-logo"><img src="/logo.png" alt="" /></span>
             <span className="brand-wordmark">{t(language, "appName")}</span>
           </a>
           <div className="language-toggle" role="group" aria-label={t(language, "language")}>
@@ -89,7 +89,7 @@ export function LoginScreen({
       <section className="auth-form-panel">
         <div className="auth-form-mobile-brand">
           <a className="brand-lockup" href="/" aria-label={t(language, "appName")}>
-            <span className="brand-symbol"><Map aria-hidden="true" /></span>
+            <span className="brand-symbol brand-symbol-logo"><img src="/logo.png" alt="" /></span>
             <span className="brand-wordmark">{t(language, "appName")}</span>
           </a>
           <div className="language-toggle language-toggle-light" role="group" aria-label={t(language, "language")}>

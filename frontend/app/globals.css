@@ -3731,3 +3731,21 @@ svg {
     transition-duration: 0.01ms !important;
   }
 }
+
+.brand-lockup .brand-symbol.brand-symbol-logo {
+  background: #fff;
+  padding: 3px;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.brand-symbol img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.topbar-mark img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}

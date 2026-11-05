@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { ArrowRight, Check, Map, ShieldCheck } from "lucide-react"
+import { ArrowRight, Check, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { apiRequest } from "@/lib/api"
 import type { Language } from "@/lib/contracts"
@@ -61,7 +61,7 @@ export function SetupScreen({
         <div className="auth-art-grain" aria-hidden="true" />
         <div className="auth-art-topline">
           <span className="brand-lockup brand-lockup-light">
-            <span className="brand-symbol"><Map aria-hidden="true" /></span>
+            <span className="brand-symbol brand-symbol-logo"><img src="/logo.png" alt="" /></span>
             <span className="brand-wordmark">{t(language, "appName")}</span>
           </span>
           <div className="language-toggle" role="group" aria-label={t(language, "language")}>

@@ -149,7 +149,7 @@ export function OperationsShell({
     <div className="app-frame" lang={language}>
       <aside className="app-sidebar" aria-label={t(language, "appName")}>
         <a className="brand-lockup sidebar-brand" href="/" aria-label={t(language, "appName")}>
-          <span className="brand-symbol"><Map aria-hidden="true" /></span>
+          <span className="brand-symbol brand-symbol-logo"><img src="/logo.png" alt="" /></span>
           <span className="brand-text-wrap">
             <span className="brand-wordmark">{t(language, "appName")}</span>
             <span className="brand-caption">{t(language, "productLabel")}</span>
@@ -186,7 +186,7 @@ export function OperationsShell({
       <div className="app-main-column">
         <header className="app-topbar">
           <div className="topbar-title-group">
-            <span className="topbar-mark"><MapPin aria-hidden="true" /></span>
+            <span className="topbar-mark"><img src="/logo.png" alt="" /></span>
             <div>
               <p className="eyebrow">{t(language, "appName")} / {roleLabel}</p>
               <h1>{t(language, selectedItem.label)}</h1>
