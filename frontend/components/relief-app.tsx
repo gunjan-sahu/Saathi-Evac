@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import useSWR, { SWRConfig } from "swr"
+import { useRouter } from "next/navigation"
 import { AlertCircle, Info, LoaderCircle, ShieldCheck } from "lucide-react"
 import { apiRequest, clearAccessToken, isLoginResponse, saveAccessToken, ACCESS_TOKEN_KEY } from "@/lib/api"
 import { isAuthUser, type AuthUser, type Language } from "@/lib/contracts"
@@ -37,6 +38,11 @@ export function ReliefApp() {
   const [notice, setNotice] = useState<{ message: string; tone: "success" | "danger" | "info" } | null>(null)
   const [noticeKey, setNoticeKey] = useState(0)
   const [showSetup, setShowSetup] = useState(false)
+  const router = useRouter()
+
+useEffect(() => {
+  if (sessionReady && !accessToken) router.replace("/login")
+}, [sessionReady, accessToken, router])
 
   useEffect(() => {
     const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY)
@@ -97,10 +103,8 @@ export function ReliefApp() {
   }
 
   if (!accessToken) {
-    if (showSetup) return <SetupScreen language={language} onLanguageChange={setLanguage} onDone={() => setShowSetup(false)} />
-    return <LoginScreen language={language} onLanguageChange={setLanguage} onLogin={handleLogin} onSetup={() => setShowSetup(true)} />
+    return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
   }
-
   if (userLoading || !user && !userError) {
     return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
   }

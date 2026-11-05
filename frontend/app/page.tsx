@@ -1,5 +1,5 @@
-import { ReliefApp } from '@/components/relief-app'
+import { redirect } from "next/navigation"
 
 export default function Page() {
-  return <ReliefApp />
+  redirect("/login")
 }
