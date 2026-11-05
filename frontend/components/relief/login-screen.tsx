@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { ArrowRight, Check, Copy, Eye, EyeOff, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { API_BASE_URL, API_URL_CONFIGURED } from "@/lib/api"
 import type { Language } from "@/lib/contracts"
@@ -24,6 +24,23 @@ export function LoginScreen({
   const [visible, setVisible] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState("")
+  const [copied, setCopied] = useState("")
+
+  const demoAccounts = [
+    { role: "Coordinator", user: "coord", pass: "Coord@12345" },
+    { role: "Rescue", user: "rescue", pass: "Rescue@12345" },
+    { role: "Volunteer", user: "volunteer1", pass: "Volunteer@12345" },
+  ]
+
+  async function copyText(key: string, text: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(key)
+      setTimeout(() => setCopied(""), 1500)
+    } catch {
+      setCopied("")
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -148,6 +165,24 @@ export function LoginScreen({
               <ArrowRight data-icon="inline-end" aria-hidden="true" />
             </Button>
           </form>
+
+          {process.env.NODE_ENV !== "production" ? (
+            <div style={{ marginTop: 14, fontSize: 12, lineHeight: 1.7, color: "#315b48" }}>
+              {demoAccounts.map((a) => (
+                <div key={a.user} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span>{a.role}: <code>{a.user}</code> / <code>{a.pass}</code></span>
+                  <button
+                    type="button"
+                    onClick={() => copyText(a.user, a.pass)}
+                    aria-label={`Copy ${a.role} password`}
+                    style={{ border: 0, background: "none", cursor: "pointer", padding: 0, display: "inline-flex" }}
+                  >
+                    {copied === a.user ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
 
           <div className="setup-note">
             <strong>{t(language, "setupNote")}</strong>
