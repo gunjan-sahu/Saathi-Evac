@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 const devanagari = Noto_Sans_Devanagari({ subsets: ['devanagari'], variable: '--font-devanagari', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'Sahaara — Disaster Response Coordination',
+  title: 'Sahaara - Disaster Response Coordination',
   description: 'A calm, role-aware workspace for disaster response and relief coordination.',
   applicationName: 'Sahaara',
   generator: 'v0.app',

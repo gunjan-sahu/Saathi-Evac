@@ -178,7 +178,7 @@ export function HelpersScreen({ user, language, notify, onProfileChanged }: { us
         <section className="surface-card">
           <div className="surface-card-heading">
             <div><p className="eyebrow">{t(language, "appDataSource")}</p><h2>{t(language, "helperDirectory")}</h2></div>
-            <span className="directory-count">{helpers ? helpers.length : "—"}</span>
+            <span className="directory-count">{helpers ? helpers.length : "-"}</span>
           </div>
           {isLoading ? <LoadingState label={t(language, "loading")} /> : null}
           {error ? <ErrorState message={formatApiError(error, language)} retryLabel={t(language, "retryRequest")} onRetry={() => void mutate()} /> : null}
