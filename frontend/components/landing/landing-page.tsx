@@ -42,32 +42,29 @@ function unspot(e: PointerEvent<HTMLElement>) {
 }
 
 const STEPS = [
-  { key: "report", title: "Report", Icon: LifeBuoy, text: "A volunteer registers a person who cannot self-evacuate, in person and with consent.",
-    bullets: ["Needs, location and contact in the person's language", "Consent recorded, health details protected", "Works offline and syncs when the network returns"] },
-  { key: "coordinate", title: "Coordinate", Icon: ShieldAlert, text: "Everyone is ranked by need, with every reason visible. Gender is never an input.",
-    bullets: ["Rule-based, explainable priority score", "Published scoring rules anyone can audit", "Fairness audit by gender and age group"] },
-  { key: "mobilize", title: "Mobilize", Icon: HandHeart, text: "The best-fit helpers are assigned, and warnings go out to residents and helpers.",
-    bullets: ["Two helpers per person, chosen by distance and skills", "A silent helper is replaced automatically", "Voice and SMS warnings (delivery is simulated in this prototype)"] },
-  { key: "respond", title: "Respond", Icon: ShieldCheck, text: "Helpers check in and rescue teams see who needs what, where, and who is already on the way.",
-    bullets: ["On my way, reached, need backup", "Needs-ranked mission queue with locations", "Needs-fit shelter for every person"] },
+  { key: "report", title: "Report", Icon: LifeBuoy, text: "Volunteers register people in person, with consent.", bullets: ["Works offline", "Health data protected"] },
+  { key: "coordinate", title: "Coordinate", Icon: ShieldAlert, text: "Everyone is ranked by need, with reasons shown.", bullets: ["Explainable score", "Gender is never used"] },
+  { key: "mobilize", title: "Mobilize", Icon: HandHeart, text: "The best helpers are assigned and warned.", bullets: ["A silent helper is replaced automatically", "Voice and SMS alerts (simulated)"] },
+  { key: "respond", title: "Respond", Icon: ShieldCheck, text: "Rescue teams see who needs what, and where.", bullets: ["On my way, reached, need backup", "Needs-matched shelters"] },
 ]
 
 const FEATURES = [
-  { Icon: Radio, title: "Events and alerts", text: "Start an event for a ward and warn every consenting resident, with an SMS fallback. Delivery is simulated in this prototype." },
-  { Icon: ShieldAlert, title: "Needs-ranked priority queue", text: "A transparent rule-based score with visible reasons, so triage can be audited and improved." },
-  { Icon: HandHeart, title: "Helper coordination", text: "Best-fit helpers per person, live check-ins and backup requests, with capacity respected." },
-  { Icon: Activity, title: "Live re-assignment", text: "If a helper goes silent, the next best helper is chosen and the change is logged." },
-  { Icon: House, title: "Shelter matching", text: "Accessible shelters with free capacity, with separate sanitation preferred." },
-  { Icon: Map, title: "Monitoring and audit", text: "A live map, a fairness audit by gender and age, and a log of who viewed health details." },
+  { Icon: Radio, title: "Events and alerts", text: "Warn a whole ward in one tap." },
+  { Icon: ShieldAlert, title: "Priority queue", text: "Transparent score, visible reasons." },
+  { Icon: HandHeart, title: "Helper coordination", text: "Best-fit helpers with live check-ins." },
+  { Icon: Activity, title: "Live re-assignment", text: "Silent helper? The next one is assigned." },
+  { Icon: House, title: "Shelter matching", text: "Accessible shelters with free space." },
+  { Icon: Map, title: "Monitoring and audit", text: "Live map, fairness audit, access log." },
 ]
 
 const PILLARS = [
-  { name: "Reach", text: "Share of at-risk people reached before the evacuation deadline." },
-  { name: "Continuity", text: "Time to re-assign a helper after a failure." },
-  { name: "Fairness", text: "Outcome comparison across gender and age groups." },
-  { name: "Safety", text: "Share placed in safe, needs-matched shelters." },
+  { name: "Reach", text: "People reached before the deadline." },
+  { name: "Continuity", text: "Time to replace a failed helper." },
+  { name: "Fairness", text: "Equal outcomes across groups." },
+  { name: "Safety", text: "People placed in safe shelters." },
 ]
-const TEAM = ["NIRVANA"]
+
+//const TEAM = ["NIRVANA"]
 const HEADLINE = "When every second matters, coordination saves lives."
 
 function RadarArt() {
@@ -125,19 +122,20 @@ function Network() {
   const [still, setStill] = useState(false)
   useEffect(() => setStill(reduced()), [])
   const edges = [
-    { d: "M320 56 Q190 96 112 226", label: "assigns and re-assigns", lx: 168, ly: 120 },
-    { d: "M320 56 Q450 96 528 226", label: "needs-ranked queue", lx: 472, ly: 120 },
-    { d: "M122 238 Q320 296 518 238", label: "helper status on scene", lx: 320, ly: 280 },
+    { d: "M320 56 Q190 96 112 226", t: "M112 226 Q190 96 320 56", label: "assigns and re-assigns" },
+    { d: "M320 56 Q450 96 528 226", t: "M320 56 Q450 96 528 226", label: "needs-ranked queue" },
+    { d: "M122 238 Q320 296 518 238", t: "M122 238 Q320 296 518 238", label: "helper status on scene" },
   ]
   return (
     <div className="net">
       <svg viewBox="0 0 640 300" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-        {edges.map((e) => (
+        {edges.map((e, i) => (
           <g key={e.label}>
             <path className="edge-base" d={e.d} />
             <path className="edge-flow" d={e.d} />
             {still ? null : <circle r="4.5" className="packet"><animateMotion dur="3.2s" repeatCount="indefinite" path={e.d} /></circle>}
-            <text className="edge-label" x={e.lx} y={e.ly} textAnchor="middle">{e.label}</text>
+                        <path id={`edge-t${i}`} d={e.t} fill="none" />
+            <text className="edge-label" dy={-7}><textPath href={`#edge-t${i}`} startOffset="50%" textAnchor="middle">{e.label}</textPath></text>
           </g>
         ))}
       </svg>
@@ -194,7 +192,7 @@ export function LandingPage() {
         <div className="layer l2" aria-hidden="true"><span style={vars({ "--x": "12%", "--y": "28%" })} /><span style={vars({ "--x": "74%", "--y": "18%" })} /><span style={vars({ "--x": "88%", "--y": "62%" })} /><span style={vars({ "--x": "30%", "--y": "74%" })} /></div>
         <div className="hero-inner">
           <div className="hero-copy">
-            <p className="kicker"><span className="live-dot" /> Disaster response coordination</p>
+            <p className="kicker">Disaster response coordination</p>
             <h1>{HEADLINE.split(" ").map((w, i) => (<Fragment key={i}><span className={`word ${i >= 5 ? "hl" : ""}`}><span style={vars({ "--i": i })}>{w}</span></span>{" "}</Fragment>))}</h1>
             <p className="sub">Sahaara connects coordinators, volunteers and rescue teams so the people warned last, the elderly, bedridden and disabled, are reached first.</p>
             <div className="cta">

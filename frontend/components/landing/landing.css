@@ -206,3 +206,27 @@
   .lp-side, .lp-side:hover { top: auto; width: 100%; height: 3.6rem; flex-direction: row; justify-content: space-around; padding: 0 .5rem; border-right: 0; border-top: 1px solid var(--line); }
   .lp-side a { padding: 0 .9rem; } .lp-side a span { display: none; }
 }
+/* ===== v3 ===== */
+/* sidebar: icons only, labels appear on hover; header and sidebar share one surface */
+.lp-side a span { opacity: 0; transition: opacity .2s; }
+.lp-side:hover a span, .lp-side:focus-within a span { opacity: 1; }
+.lp-side { background: rgb(9 24 20 / .96); justify-content: center; }
+.lp-header { background: rgb(9 24 20 / .96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+
+/* kicker: text on a line, no pill */
+.lp .kicker { display: flex; max-width: 34rem; gap: .9rem; padding: 0; border: 0; border-radius: 0; background: none; color: #8fe3b8; }
+.lp .kicker::before { content: ""; width: 2.5rem; height: 2px; background: #7fd1a8; flex: none; }
+.lp .kicker::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgb(127 209 168 / .7), transparent); }
+
+/* curved labels */
+.lp .edge-label { paint-order: stroke; stroke: #0d2a23; stroke-width: 4px; font-weight: 600; }
+
+/* balanced pages: centred headings, calmer spacing */
+.lp .sec { align-items: center; text-align: center; }
+.lp .sec h2, .lp .sec .lead { margin-inline: auto; max-width: 32rem; text-align: center; }
+.lp .sec > * { width: 100%; }
+.lp .flow-card { margin-inline: auto; max-width: 34rem; text-align: left; }
+.lp .role-card, .lp .feature { text-align: left; }
+.lp .roles, .lp .features { max-width: 1000px; margin-inline: auto; }
+.lp .pillars { max-width: 1000px; margin-inline: auto; text-align: left; }
+.lp .hero-copy .sub { max-width: 26rem; }
