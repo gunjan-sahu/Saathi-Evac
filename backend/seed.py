@@ -21,7 +21,10 @@ db.add_all([
 ])
 db.commit()
 users = [("coord", "Coord@12345", "coordinator", None), ("rescue", "Rescue@12345", "rescue", None),
-         ("volunteer1", "Volunteer@12345", "volunteer", 1)]
+         ("volunteer1", "Volunteer@12345", "volunteer", 1),
+         # keep in sync with frontend/lib/demo.ts
+         ("demo_coordinator", "DemoCoord@2026", "coordinator", None), ("demo_rescue", "DemoRescue@2026", "rescue", None),
+         ("demo_volunteer", "DemoVolunteer@2026", "volunteer", 1)]
 for name, pw, role, hid in users:
     db.add(User(username=name, password_hash=hash_password(pw), role=role, full_name=name.title(), helper_id=hid))
 db.commit()
