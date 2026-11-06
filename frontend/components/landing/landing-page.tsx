@@ -64,7 +64,7 @@ const PILLARS = [
   { name: "Safety", text: "People placed in safe shelters." },
 ]
 
-//const TEAM = ["NIRVANA"]
+const TEAM = ["Gunjan","Shorya"]
 const HEADLINE = "When every second matters, coordination saves lives."
 
 function RadarArt() {
