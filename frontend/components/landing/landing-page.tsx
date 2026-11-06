@@ -221,7 +221,7 @@ export function LandingPage() {
                   <h3>{m.label}</h3>
                   <strong>{m.portal}</strong>
                   <p>{m.blurb}</p>
-                  <ul>{(m.points ?? []).map((p) => <li key={p}>{p}</li>)}</ul>
+                  <ul>{m.points.map((p) => <li key={p}>{p}</li>)}</ul>
                   <Link href={`/login/${r}`} className="role-cta">{m.label} portal <ArrowRight aria-hidden="true" /></Link>
                 </article>
               </Reveal>
