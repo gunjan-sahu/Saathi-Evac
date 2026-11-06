@@ -84,7 +84,9 @@ export function RoleLogin({ role }: { role: UserRole }) {
       window.sessionStorage.setItem("sahaara.role", role)
       router.replace(`/${role}`)
     } catch (cause) {
-      setErrors({ form: formatApiError(cause, lang) })
+      const base = formatApiError(cause, lang)
+      const hint = DEMO_MODE && username.trim().toLowerCase() !== demo.username ? ` Demo username is ${demo.username}. Use "Fill form" below.` : ""
+      setErrors({ form: base + hint })
       setPending(false)
     }
   }
