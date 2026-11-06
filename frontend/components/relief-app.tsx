@@ -28,7 +28,17 @@ import { ErrorState } from "@/components/relief/primitives"
 
 export function ReliefApp({ portalRole }: { portalRole: UserRole }) {
   const router = useRouter()
-  const [language, setLanguage] = useState<Language>("en")
+    const [language, setLangState] = useState<Language>("en")
+  const setLanguage = useCallback((next: Language) => {
+    setLangState(next)
+    try { window.localStorage.setItem("sahaara.lang", next) } catch {}
+  }, [])
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("sahaara.lang")
+      if (saved === "hi" || saved === "en") setLangState(saved)
+    } catch {}
+  }, 
   const [page, setPage] = useState<PageId>("overview")
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [sessionKey, setSessionKey] = useState<string | null>(null)
@@ -149,7 +159,7 @@ export function ReliefApp({ portalRole }: { portalRole: UserRole }) {
     if (allowed(target)) setPage(target)
   }
 
-  const overview = user.role === "coordinator" ? <CommandCentre user={user} onNavigate={onPageChange} /> : user.role === "rescue" ? <FieldOperations user={user} onNavigate={onPageChange} /> : <CommunityHub user={user} onNavigate={onPageChange} />
+    const overview = user.role === "coordinator" ? <CommandCentre user={user} language={language} onNavigate={onPageChange} /> : user.role === "rescue" ? <FieldOperations user={user} language={language} onNavigate={onPageChange} /> : <CommunityHub user={user} language={language} onNavigate={onPageChange} />
 
   const pageContent = (() => {
     if (!allowed(page)) return overview

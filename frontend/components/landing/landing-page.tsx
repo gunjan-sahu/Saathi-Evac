@@ -42,7 +42,7 @@ function unspot(e: PointerEvent<HTMLElement>) {
 }
 
 const STEPS = [
-  { key: "report", title: "Report", Icon: LifeBuoy, text: "Volunteers register people in person, with consent.", bullets: ["Works offline", "Health data protected"] },
+  { key: "report", title: "Report", Icon: LifeBuoy, text: "Volunteers register people in person, with consent.", bullets: ["Role-based access", "Health data protected"] },
   { key: "coordinate", title: "Coordinate", Icon: ShieldAlert, text: "Everyone is ranked by need, with reasons shown.", bullets: ["Explainable score", "Gender is never used"] },
   { key: "mobilize", title: "Mobilize", Icon: HandHeart, text: "The best helpers are assigned and warned.", bullets: ["A silent helper is replaced automatically", "Voice and SMS alerts (simulated)"] },
   { key: "respond", title: "Respond", Icon: ShieldCheck, text: "Rescue teams see who needs what, and where.", bullets: ["On my way, reached, need backup", "Needs-matched shelters"] },

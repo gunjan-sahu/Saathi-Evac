@@ -25,7 +25,7 @@ export const UI = {
     firstTime: "First time here?",
     createCoord: "Create the first coordinator account",
     signInEyebrow: (r: string) => `${r} sign-in`,
-    chips: ["Works offline", "Hindi & English", "Privacy by default"],
+    chips: ["Role-based access", "Hindi & English", "Privacy by default"],
   },
   hi: {
     back: "दूसरी भूमिका चुनें",
@@ -48,7 +48,7 @@ export const UI = {
     firstTime: "पहली बार?",
     createCoord: "पहला समन्वयक खाता बनाएँ",
     signInEyebrow: (r: string) => `${r} साइन-इन`,
-    chips: ["ऑफ़लाइन भी काम करता है", "हिंदी और अंग्रेज़ी", "डिफ़ॉल्ट रूप से गोपनीयता"],
+    chips: ["भूमिका-आधारित पहुँच", "हिंदी और अंग्रेज़ी", "डिफ़ॉल्ट रूप से गोपनीयता"],
   },
 }
 
