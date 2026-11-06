@@ -51,6 +51,7 @@ class AlertIn(BaseModel):
 class LoginIn(BaseModel):
     username: str
     password: str
+    role: Optional[str] = None  # the portal being signed in to; a mismatch is refused
 
 
 class BootstrapIn(BaseModel):

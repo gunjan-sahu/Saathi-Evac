@@ -30,6 +30,8 @@ def login(data: LoginIn, db: Session = Depends(get_db)):
         record_fail(name)
         raise HTTPException(401, "Wrong username or password")
     clear_fails(name)
+    if data.role and data.role != u.role:
+        raise HTTPException(403, f"This is a {u.role} account. Please use the {u.role} sign-in.")
     return {"access_token": create_token(u.id, u.role), "token_type": "bearer", "role": u.role}
 
 
