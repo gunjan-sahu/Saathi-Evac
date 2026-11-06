@@ -2,18 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import useSWR, { SWRConfig } from "swr"
-import { useRouter } from "next/navigation"
 import { AlertCircle, Info, LoaderCircle, ShieldCheck } from "lucide-react"
-import { apiRequest, clearAccessToken, isLoginResponse, saveAccessToken, ACCESS_TOKEN_KEY } from "@/lib/api"
-import { isAuthUser, type AuthUser, type Language } from "@/lib/contracts"
+import { useRouter } from "next/navigation"
+import { clearAccessToken, ACCESS_TOKEN_KEY } from "@/lib/api"
+import { isAuthUser, type AuthUser, type Language, type UserRole } from "@/lib/contracts"
 import { createClientId, formatApiError } from "@/lib/format"
 import { t } from "@/lib/i18n"
 import { swrFetcher } from "@/lib/swr-fetcher"
 import { useOfflineQueue } from "@/hooks/use-offline-queue"
-import { LoginScreen } from "@/components/relief/login-screen"
-import { SetupScreen } from "@/components/relief/setup-screen"
 import { OperationsShell, type PageId } from "@/components/relief/operations-shell"
-import { OverviewScreen } from "@/components/relief/screens/overview-screen"
+import { CommandCentre, CommunityHub, FieldOperations } from "@/components/relief/dashboards"
 import { DispatchScreen } from "@/components/relief/screens/dispatch-screen"
 import { PeopleScreen } from "@/components/relief/screens/people-screen"
 import { PersonRegistrationScreen } from "@/components/relief/screens/person-registration-screen"
@@ -28,7 +26,8 @@ import { UsersScreen } from "@/components/relief/screens/users-screen"
 import { RulesScreen } from "@/components/relief/screens/rules-screen"
 import { ErrorState } from "@/components/relief/primitives"
 
-export function ReliefApp() {
+export function ReliefApp({ portalRole }: { portalRole: UserRole }) {
+  const router = useRouter()
   const [language, setLanguage] = useState<Language>("en")
   const [page, setPage] = useState<PageId>("overview")
   const [accessToken, setAccessToken] = useState<string | null>(null)
@@ -37,12 +36,6 @@ export function ReliefApp() {
   const swrConfig = useMemo(() => ({ provider: () => new Map() }), [sessionKey])
   const [notice, setNotice] = useState<{ message: string; tone: "success" | "danger" | "info" } | null>(null)
   const [noticeKey, setNoticeKey] = useState(0)
-  const [showSetup, setShowSetup] = useState(false)
-  const router = useRouter()
-
-useEffect(() => {
-  if (sessionReady && !accessToken) router.replace("/login")
-}, [sessionReady, accessToken, router])
 
   useEffect(() => {
     const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY)
@@ -60,6 +53,7 @@ useEffect(() => {
   useEffect(() => {
     const handleUnauthorized = () => {
       clearAccessToken()
+      window.sessionStorage.removeItem("sahaara.role")
       setAccessToken(null)
       setSessionKey(null)
       setPage("overview")
@@ -77,26 +71,23 @@ useEffect(() => {
     window.setTimeout(() => setNotice((current) => current && current.message === message ? null : current), 5200)
   }, [])
 
-  const handleLogin = useCallback(async (username: string, password: string) => {
-    const response = await apiRequest<unknown>("/auth/login", {
-      method: "POST",
-      body: { username, password },
-      auth: false,
-    })
-    if (!isLoginResponse(response)) throw new Error(t(language, "loginResponseGap"))
-    saveAccessToken(response.access_token)
-    setAccessToken(response.access_token)
-    setSessionKey(createClientId())
-    setPage("overview")
-  }, [language])
-
   const handleSignOut = useCallback(() => {
     clearAccessToken()
+    window.sessionStorage.removeItem("sahaara.role")
     setAccessToken(null)
     setSessionKey(null)
     setPage("overview")
     void mutateUser(undefined, { revalidate: false })
-  }, [mutateUser])
+    router.replace("/")
+  }, [mutateUser, router])
+
+  // Protected route: no session goes to this role's sign-in; a session for another role goes to its own portal.
+  useEffect(() => {
+    if (sessionReady && !accessToken) router.replace(`/login/${portalRole}`)
+  }, [sessionReady, accessToken, portalRole, router])
+  useEffect(() => {
+    if (user && isAuthUser(user) && user.role !== portalRole) router.replace(`/${user.role}`)
+  }, [user, portalRole, router])
 
   if (!sessionReady) {
     return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
@@ -105,6 +96,7 @@ useEffect(() => {
   if (!accessToken) {
     return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
   }
+
   if (userLoading || !user && !userError) {
     return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
   }
@@ -140,6 +132,10 @@ useEffect(() => {
     )
   }
 
+  if (user.role !== portalRole) {
+    return <div className="boot-screen" role="status"><LoaderCircle className="spin-icon" aria-hidden="true" /><span>{t(language, "loading")}</span></div>
+  }
+
   const allowed = (target: PageId) => {
     if (target === "overview" || target === "rules") return true
     if (target === "dispatch" || target === "events") return user.role === "coordinator" || user.role === "rescue"
@@ -153,10 +149,12 @@ useEffect(() => {
     if (allowed(target)) setPage(target)
   }
 
+  const overview = user.role === "coordinator" ? <CommandCentre user={user} onNavigate={onPageChange} /> : user.role === "rescue" ? <FieldOperations user={user} onNavigate={onPageChange} /> : <CommunityHub user={user} onNavigate={onPageChange} />
+
   const pageContent = (() => {
-    if (!allowed(page)) return <OverviewScreen user={user} language={language} onNavigate={onPageChange} />
+    if (!allowed(page)) return overview
     switch (page) {
-      case "overview": return <OverviewScreen user={user} language={language} onNavigate={onPageChange} />
+      case "overview": return overview
       case "dispatch": return <DispatchScreen user={user} language={language} notify={notify} />
       case "people": return <PeopleScreen language={language} notify={notify} />
       case "register": return <PersonRegistrationScreen language={language} queue={offlineQueue} notify={notify} />
@@ -169,7 +167,7 @@ useEffect(() => {
       case "access-audit": return <AccessAuditScreen language={language} />
       case "users": return <UsersScreen user={user} language={language} notify={notify} />
       case "rules": return <RulesScreen language={language} />
-      default: return <OverviewScreen user={user} language={language} onNavigate={onPageChange} />
+      default: return overview
     }
   })()
 
