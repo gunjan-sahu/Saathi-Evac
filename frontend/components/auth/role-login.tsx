@@ -2,19 +2,20 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState, type CSSProperties, type FormEvent } from "react"
-import { ArrowLeft, ArrowRight, Check, Copy, Eye, EyeOff, Map } from "lucide-react"
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react"
+import { ArrowLeft, ArrowRight, Check, Copy, Eye, EyeOff, Languages, Lock, WifiOff } from "lucide-react"
 import { RoleIcon } from "@/components/role-icon"
 import { apiRequest, isLoginResponse, saveAccessToken } from "@/lib/api"
+import { LANG_KEY, ROLE_HI, UI, type Lang } from "@/lib/auth-copy"
 import type { UserRole } from "@/lib/contracts"
 import { DEMO_ACCOUNTS, DEMO_MODE } from "@/lib/demo"
 import { formatApiError } from "@/lib/format"
-import { ROLE_META, ROLE_ORDER } from "@/lib/roles"
+import { ROLE_META } from "@/lib/roles"
 import "./auth.css"
 
 type Errors = { username?: string; password?: string; form?: string }
 
-function CopyButton({ text, label }: { text: string; label: string }) {
+function CopyButton({ text, label, copyText, doneText }: { text: string; label: string; copyText: string; doneText: string }) {
   const [done, setDone] = useState(false)
   async function copy() {
     try {
@@ -31,9 +32,9 @@ function CopyButton({ text, label }: { text: string; label: string }) {
     window.setTimeout(() => setDone(false), 1600)
   }
   return (
-    <button type="button" className={`copy-btn ${done ? "done" : ""}`} onClick={() => void copy()} aria-label={`Copy ${label}`}>
+    <button type="button" className={`copy-btn ${done ? "done" : ""}`} onClick={() => void copy()} aria-label={`${copyText} ${label}`}>
       {done ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-      <span>{done ? "Copied" : "Copy"}</span>
+      <span>{done ? doneText : copyText}</span>
     </button>
   )
 }
@@ -41,17 +42,34 @@ function CopyButton({ text, label }: { text: string; label: string }) {
 export function RoleLogin({ role }: { role: UserRole }) {
   const meta = ROLE_META[role]
   const router = useRouter()
+  const [lang, setLang] = useState<Lang>("en")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [visible, setVisible] = useState(false)
   const [pending, setPending] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
 
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(LANG_KEY)
+      if (saved === "hi" || saved === "en") setLang(saved)
+    } catch {}
+  }, [])
+
+  function chooseLang(next: Lang) {
+    setLang(next)
+    try { window.localStorage.setItem(LANG_KEY, next) } catch {}
+  }
+
+  const ui = UI[lang]
+  const text = lang === "hi" ? ROLE_HI[role] : { label: meta.label, portal: meta.portal, tagline: meta.tagline, points: meta.points }
+  const demo = DEMO_ACCOUNTS[role]
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const next: Errors = {}
-    if (username.trim().length < 3) next.username = "Enter your username (at least 3 characters)."
-    if (!password) next.password = "Enter your password."
+    if (username.trim().length < 3) next.username = ui.errUser
+    if (!password) next.password = ui.errPass
     setErrors(next)
     if (next.username || next.password) return
     setPending(true)
@@ -61,69 +79,72 @@ export function RoleLogin({ role }: { role: UserRole }) {
         body: { username: username.trim(), password, role },
         auth: false,
       })
-      if (!isLoginResponse(response) || response.role !== role) throw new Error("Unexpected response from the sign-in service.")
+      if (!isLoginResponse(response) || response.role !== role) throw new Error(ui.badResponse)
       saveAccessToken(response.access_token)
       window.sessionStorage.setItem("sahaara.role", role)
       router.replace(`/${role}`)
     } catch (cause) {
-      setErrors({ form: formatApiError(cause, "en") })
+      setErrors({ form: formatApiError(cause, lang) })
       setPending(false)
     }
   }
 
   return (
-    <main className="lg" style={{ "--acc": meta.accent, "--soft": meta.soft, "--bright": meta.bright } as unknown as CSSProperties}>
+    <main className="lg" lang={lang} style={{ "--acc": meta.accent, "--soft": meta.soft, "--bright": meta.bright } as unknown as CSSProperties}>
+      <div className="lg-lang" role="group" aria-label="Language">
+        <Languages aria-hidden="true" />
+        <button type="button" aria-pressed={lang === "en"} onClick={() => chooseLang("en")}>EN</button>
+        <button type="button" aria-pressed={lang === "hi"} onClick={() => chooseLang("hi")}>हि</button>
+      </div>
+
       <section className="lg-art">
         <div className="lg-rings" aria-hidden="true"><span /><span /><span /></div>
+        <div className="lg-watermark" aria-hidden="true"><RoleIcon name={meta.icon} /></div>
         <Link href="/" className="rs-brand light"><span className="rs-mark"><img src="/logo.png" alt="" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", background: "#fff" }} /></span>Sahaara</Link>
         <div className="lg-art-copy">
           <span className="lg-icon"><RoleIcon name={meta.icon} /></span>
-          <p className="rs-eyebrow">{meta.label} sign-in</p>
-          <h1>{meta.portal}</h1>
-          <p>{meta.tagline}</p>
-          <ul>{meta.points.map((p) => <li key={p}>{p}</li>)}</ul>
+          <p className="rs-eyebrow">{ui.signInEyebrow(text.label)}</p>
+          <h1>{text.portal}</h1>
+          <p>{text.tagline}</p>
+          <ul className="lg-points">{text.points.map((p) => <li key={p}>{p}</li>)}</ul>
+        </div>
+        <div className="lg-chips">
+          <span><WifiOff aria-hidden="true" />{ui.chips[0]}</span>
+          <span><Languages aria-hidden="true" />{ui.chips[1]}</span>
+          <span><Lock aria-hidden="true" />{ui.chips[2]}</span>
         </div>
       </section>
 
       <section className="lg-form">
         <div className="lg-inner">
-          <Link href="/login" className="rs-back dark"><ArrowLeft aria-hidden="true" /> Choose another role</Link>
-          <h2>Sign in as {meta.label.toLowerCase()}</h2>
-          <p className="muted">Use the account your coordinator created for you. Only {meta.label.toLowerCase()} accounts can enter this portal.</p>
+          <Link href="/login" className="rs-back dark"><ArrowLeft aria-hidden="true" /> {ui.back}</Link>
+          <h2>{ui.signInAs(text.label)}</h2>
+          <p className="muted">{ui.desc(text.label)}</p>
 
           <form onSubmit={submit} noValidate>
-            <label htmlFor="lg-user">Username</label>
+            <label htmlFor="lg-user">{ui.username}</label>
             <input id="lg-user" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} aria-invalid={Boolean(errors.username)} autoFocus />
             {errors.username ? <small className="err">{errors.username}</small> : null}
-            <label htmlFor="lg-pass">Password</label>
+            <label htmlFor="lg-pass">{ui.password}</label>
             <span className="pw">
               <input id="lg-pass" type={visible ? "text" : "password"} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={Boolean(errors.password)} />
-              <button type="button" onClick={() => setVisible((v) => !v)} aria-label={visible ? "Hide password" : "Show password"}>{visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
+              <button type="button" onClick={() => setVisible((v) => !v)} aria-label={visible ? ui.hide : ui.show}>{visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}</button>
             </span>
             {errors.password ? <small className="err">{errors.password}</small> : null}
             {errors.form ? <p className="err form-err" role="alert">{errors.form}</p> : null}
-            <button className="lg-submit" disabled={pending}>{pending ? <span className="spin" aria-hidden="true" /> : null}{pending ? "Signing in…" : "Sign in"}{pending ? null : <ArrowRight aria-hidden="true" />}</button>
+            <button className="lg-submit" disabled={pending}>{pending ? <span className="spin" aria-hidden="true" /> : null}{pending ? ui.signingIn : ui.signIn}{pending ? null : <ArrowRight aria-hidden="true" />}</button>
           </form>
-          {role === "coordinator" ? <p className="muted small">First time here? <Link href="/setup">Create the first coordinator account</Link></p> : null}
+          {role === "coordinator" ? <p className="muted small">{ui.firstTime} <Link href="/setup">{ui.createCoord}</Link></p> : null}
 
           {DEMO_MODE ? (
             <div className="demo">
-              <h3>Explore with Demo Credentials</h3>
-              <p className="muted small">Demo accounts for a demonstration database only. Create them with <code>python create_demo_accounts.py</code>.</p>
-              {ROLE_ORDER.map((r) => {
-                const acc = DEMO_ACCOUNTS[r]
-                const m = ROLE_META[r]
-                return (
-                  <div key={r} className={`demo-row ${r === role ? "current" : ""}`} style={{ "--acc": m.accent } as unknown as CSSProperties}>
-                    <strong>{m.label}</strong>
-                    <div><code>{acc.username}</code><CopyButton text={acc.username} label={`${m.label} username`} /></div>
-                    <div><code>{acc.password}</code><CopyButton text={acc.password} label={`${m.label} password`} /></div>
-                    {r === role
-                      ? <button type="button" className="fill" onClick={() => { setUsername(acc.username); setPassword(acc.password); setErrors({}) }}>Fill form</button>
-                      : <Link className="fill" href={`/login/${r}`}>Open sign-in</Link>}
-                  </div>
-                )
-              })}
+              <h3>{ui.demoTitle}</h3>
+              <p className="muted small">{ui.demoNote}</p>
+              <div className="demo-row current">
+                <div><span className="demo-k">{ui.username}</span><code>{demo.username}</code><CopyButton text={demo.username} label={ui.username} copyText={ui.copy} doneText={ui.copied} /></div>
+                <div><span className="demo-k">{ui.password}</span><code>{demo.password}</code><CopyButton text={demo.password} label={ui.password} copyText={ui.copy} doneText={ui.copied} /></div>
+                <button type="button" className="fill" onClick={() => { setUsername(demo.username); setPassword(demo.password); setErrors({}) }}>{ui.fill}</button>
+              </div>
             </div>
           ) : null}
         </div>
