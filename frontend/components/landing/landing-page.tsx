@@ -67,7 +67,7 @@ const PILLARS = [
   { name: "Fairness", text: "Outcome comparison across gender and age groups." },
   { name: "Safety", text: "Share placed in safe, needs-matched shelters." },
 ]
-
+const TEAM = ["NIRVANA"]
 const HEADLINE = "When every second matters, coordination saves lives."
 
 function RadarArt() {
@@ -178,11 +178,16 @@ export function LandingPage() {
   return (
     <div className="lp" ref={root}>
       <div className="lp-progress" aria-hidden="true" />
-      <header className="lp-header">
-        <Link href="/" className="lp-brand"><span className="lp-mark"><Map aria-hidden="true" /></span>Sahaara</Link>
-        <nav aria-label="Sections"><a href="#how">How it works</a><a href="#roles">Roles</a><a href="#features">Features</a><a href="#why">Why Sahaara</a></nav>
+       <header className="lp-header">
+        <Link href="/" className="lp-brand"><img src="/logo.png" alt="" className="lp-logo" />Sahaara</Link>
         <Link href={portal ? `/${portal}` : "/login"} className="lp-btn ghost">{portal ? "Open portal" : "Sign in"}</Link>
       </header>
+      <aside className="lp-side" aria-label="Sections">
+        <a href="#how"><Activity aria-hidden="true" /><span>How it works</span></a>
+        <a href="#roles"><LifeBuoy aria-hidden="true" /><span>Roles</span></a>
+        <a href="#features"><Radio aria-hidden="true" /><span>Features</span></a>
+        <a href="#why"><ShieldCheck aria-hidden="true" /><span>Why Sahaara</span></a>
+      </aside>
 
       <section className="hero">
         <div className="layer l1" aria-hidden="true"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><path d="M0 420 C160 300 300 480 460 360 S700 300 800 380" /><path d="M0 470 C180 350 320 520 480 410 S720 350 800 430" /><path d="M0 520 C200 410 340 560 500 460 S740 400 800 480" /></svg></div>
@@ -190,7 +195,7 @@ export function LandingPage() {
         <div className="hero-inner">
           <div className="hero-copy">
             <p className="kicker"><span className="live-dot" /> Disaster response coordination</p>
-            <h1>{HEADLINE.split(" ").map((w, i) => (<Fragment key={i}><span className="word"><span style={vars({ "--i": i })}>{w}</span></span>{" "}</Fragment>))}</h1>
+            <h1>{HEADLINE.split(" ").map((w, i) => (<Fragment key={i}><span className={`word ${i >= 5 ? "hl" : ""}`}><span style={vars({ "--i": i })}>{w}</span></span>{" "}</Fragment>))}</h1>
             <p className="sub">Sahaara connects coordinators, volunteers and rescue teams so the people warned last, the elderly, bedridden and disabled, are reached first.</p>
             <div className="cta">
               <a href="#roles" className="lp-btn solid">Get started <ArrowRight aria-hidden="true" /></a>
@@ -221,7 +226,7 @@ export function LandingPage() {
                   <h3>{m.label}</h3>
                   <strong>{m.portal}</strong>
                   <p>{m.blurb}</p>
-                  <ul>{m.points.map((p) => <li key={p}>{p}</li>)}</ul>
+                  <ul>{(m.points ?? []).map((p) => <li key={p}>{p}</li>)}</ul>
                   <Link href={`/login/${r}`} className="role-cta">{m.label} portal <ArrowRight aria-hidden="true" /></Link>
                 </article>
               </Reveal>
@@ -263,11 +268,15 @@ export function LandingPage() {
 
       <footer className="lp-footer">
         <div>
-          <Link href="/" className="lp-brand"><span className="lp-mark"><Map aria-hidden="true" /></span>Sahaara</Link>
+          <Link href="/" className="lp-brand"><img src="/logo.png" alt="" className="lp-logo" />Sahaara</Link>
           <p>Proposed design, prototype stage. Demo data only.</p>
         </div>
         <nav aria-label="Footer"><b>Explore</b><a href="#how">How it works</a><a href="#roles">Roles</a><a href="#features">Features</a><a href="#why">Why Sahaara</a></nav>
         <nav aria-label="Portals"><b>Portals</b>{ROLE_ORDER.map((r) => <Link key={r} href={`/login/${r}`}>{ROLE_META[r].label}</Link>)}<Link href="/login">Sign in</Link></nav>
+        <div className="team">
+          <b className="team-title">Team Nirvana</b>
+          <ul>{TEAM.map((n) => <li key={n}>{n}</li>)}</ul>
+        </div>
       </footer>
     </div>
   )

@@ -75,7 +75,7 @@ export function RoleLogin({ role }: { role: UserRole }) {
     <main className="lg" style={{ "--acc": meta.accent, "--soft": meta.soft, "--bright": meta.bright } as unknown as CSSProperties}>
       <section className="lg-art">
         <div className="lg-rings" aria-hidden="true"><span /><span /><span /></div>
-        <Link href="/" className="rs-brand light"><span className="rs-mark"><Map aria-hidden="true" /></span>Sahaara</Link>
+        <Link href="/" className="rs-brand light"><span className="rs-mark"><img src="/logo.png" alt="" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", background: "#fff" }} /></span>Sahaara</Link>
         <div className="lg-art-copy">
           <span className="lg-icon"><RoleIcon name={meta.icon} /></span>
           <p className="rs-eyebrow">{meta.label} sign-in</p>

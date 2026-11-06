@@ -12,7 +12,7 @@ export function RoleSelect() {
     <main className="rs">
       <div className="rs-glow" aria-hidden="true" />
       <header className="rs-top">
-        <Link href="/" className="rs-brand"><span className="rs-mark"><Map aria-hidden="true" /></span>Sahaara</Link>
+        <Link href="/" className="rs-brand"><span className="rs-mark"><img src="/logo.png" alt="" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", background: "#fff" }} /></span>Sahaara</Link>
         <Link href="/" className="rs-back"><ArrowLeft aria-hidden="true" /> Back to home</Link>
       </header>
       <section className="rs-body">

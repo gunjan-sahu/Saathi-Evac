@@ -152,3 +152,57 @@
   .word > span { translate: 0 0; rotate: 0deg; } .reveal { opacity: 1; translate: 0 0; scale: 1; } .l1 path { stroke-dashoffset: 0; } .lp-progress { display: none; }
   .ln-a { opacity: 1; } .ln-b { opacity: 0; } .l1, .l2, .hero-art { translate: 0 0; }
 }
+/* ===== v2 refinements ===== */
+.lp { --bg: #0d2a23; --bg2: #14443a; --ink: #ffffff; --mute: #d3e3da; --line: rgb(255 255 255 / .18); padding-left: 4.5rem; }
+.lp h1, .lp h2, .lp h3, .lp li, .lp b { color: var(--ink); }
+.lp li { color: #eaf4ee; }
+.lp .eyebrow, .lp .kicker { color: #8fe3b8; }
+.flow-node b { opacity: .9; }
+
+/* logo */
+.lp-logo { width: 2.4rem; height: 2.4rem; border-radius: .7rem; background: #fff; object-fit: contain; padding: 2px; }
+
+/* header + sidebar */
+.lp-header { inset: 0 0 auto 4.5rem; }
+.lp-side { position: fixed; left: 0; top: 0; bottom: 0; width: 4.5rem; z-index: 55; display: flex; flex-direction: column; justify-content: center; gap: .4rem; padding: 0 .75rem; background: rgb(9 24 20 / .94); backdrop-filter: blur(14px); border-right: 1px solid var(--line); overflow: hidden; transition: width .35s var(--ease); }
+.lp-side:hover, .lp-side:focus-within { width: 14rem; }
+.lp-side a { display: flex; align-items: center; gap: 1rem; height: 3rem; padding: 0 .85rem; border-radius: .9rem; white-space: nowrap; color: var(--mute); transition: background .2s, color .2s; }
+.lp-side a svg { flex: none; width: 1.3rem; height: 1.3rem; }
+.lp-side a:hover { background: rgb(127 209 168 / .18); color: #fff; }
+
+/* every section is one full screen */
+.lp .sec { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-block: 7rem 4rem; }
+
+/* hero */
+.lp .kicker { padding: .5rem 1rem; border: 1px solid rgb(127 209 168 / .4); border-radius: 999px; background: rgb(127 209 168 / .1); color: #a6f0c8; letter-spacing: .14em; }
+.word.hl > span { background: linear-gradient(90deg, #7fd1a8, #e7b45b, #e8736b, #7fd1a8); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation-name: word-in, shine; animation-duration: .9s, 5s; animation-timing-function: var(--ease), linear; animation-iteration-count: 1, infinite; animation-fill-mode: both, none; animation-delay: calc(var(--i) * 90ms + 250ms), 1.6s; }
+@keyframes shine { to { background-position: 250% 0; } }
+.hero-art { position: relative; }
+.hero-art::after { content: ""; position: absolute; inset: 9.5%; border-radius: 50%; pointer-events: none; background: conic-gradient(from 0deg, transparent 0 270deg, rgb(127 209 168 / .38) 360deg); animation: sweep 5s linear infinite; }
+@keyframes sweep { to { rotate: 360deg; } }
+
+/* page 2: remove the white dot that covered the icon */
+.flow-dot { display: none; }
+
+/* page 3: icons overlapped the labels, text was dark, hover was dim */
+.lp .net .net-node svg { position: static; inset: auto; width: 1.5rem; height: 1.5rem; }
+.lp .net-node { min-width: 7.5rem; background: rgb(10 30 25 / .95); }
+.lp .net-node span { color: #fff; }
+.lp .edge-label { fill: #e6f3ec; font-size: 12px; }
+.lp .role-card::before, .lp .feature::before { background: radial-gradient(320px circle at var(--x) var(--y), color-mix(in srgb, var(--acc, #7fd1a8) 16%, transparent), transparent 70%); }
+.lp .role-card:hover, .lp .feature:hover { background: color-mix(in srgb, var(--acc, #7fd1a8) 14%, #0f2c25); }
+.lp .role-card:hover :is(h3, p, li), .lp .feature:hover :is(h3, p) { color: #fff; }
+
+/* footer team (desktop only, so the mobile layout is untouched) */
+@media (min-width: 961px) { .lp-footer { grid-template-columns: 1.4fr 1fr 1fr 1.3fr; } }
+.team-title { display: block; font-size: 1rem; color: #8fe3b8; margin-bottom: .5rem; }
+.team ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; color: var(--mute); }
+
+/* phones: sidebar becomes a bottom bar */
+@media (max-width: 960px) {
+  .lp { padding-left: 0; padding-bottom: 3.6rem; }
+  .lp-header { inset: 0 0 auto 0; }
+  .lp-side, .lp-side:hover { top: auto; width: 100%; height: 3.6rem; flex-direction: row; justify-content: space-around; padding: 0 .5rem; border-right: 0; border-top: 1px solid var(--line); }
+  .lp-side a { padding: 0 .9rem; } .lp-side a span { display: none; }
+}
